@@ -1,20 +1,33 @@
 version: 2
 jobs:
-  sally:
+  build:
     docker: # use the docker executor type; machine and macos executors are also supported
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
-      - run: echo "A first hello" # run the `echo` command
-  bobby:
+      - run: echo "npm installing" 
+      - run: npm install 
+      - run: CI=true npm run build
+  test:
     docker: # use the docker executor type; machine and macos executors are also supported
       - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
     steps:
       - checkout # check out the code in the project directory
-      - run: echo "double trouble" # run the `echo` command
+      - run: echo "testing stuff" # run the `echo` command
+      - run: npm install 
+      - run: npm test
+  hitthere:
+    docker: # use the docker executor type; machine and macos executors are also supported
+    - image: circleci/node:4.8.2 # the primary container, where your job's commands are run
+    steps:
+      - checkout
+      - run: echo "helloooo"
 workflows:
   version: 2
-  bobby_sally:
+  build_test_and_lint:
     jobs:
-      - bobby
-      - sally
+      - build
+      - hitthere
+      - test:
+          requires:
+            - hitthere
